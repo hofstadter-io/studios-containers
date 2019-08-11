@@ -1,6 +1,18 @@
+# Builder image
+FROM node:10.16-jessie as builder
+
+WORKDIR /usr/src/app
+
+COPY . ./
+
+RUN yarn
+
+RUN yarn build
+
+# Runtime image
 FROM nginx
 
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY mysite.conf /etc/nginx/conf.d/default.conf
+COPY react-site.conf /etc/nginx/conf.d/default.conf
 
-COPY build /usr/share/nginx/html
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html
